@@ -156,7 +156,7 @@ var mongodb = function () {
 			Post.find({ "upload": {  $lt: new Date(new Date() - (1000*60*config.timeout)) }},
 			function (err, res) {
 				if (err) return;
-				fs.unlink(config.upload+'/'+res.img, function(err) { if (err) console.(err); });
+				fs.unlink(config.upload+'/'+res.img, function(err) { if (err) console.log(err); });
 				for (var i in res.thread)
 					fs.unlink(config.upload+'/'+res.thread[i].img, function(err) { if (err) console.log(err); });
 			});

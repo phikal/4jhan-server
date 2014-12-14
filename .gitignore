@@ -1,6 +1,6 @@
 node_modules
+img/
 .img/
-img/*
 config.json
 mhsc.html
 4jhan.db
