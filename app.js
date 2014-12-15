@@ -7,7 +7,6 @@
 // var get = function(field, value, array) {
 //     for(var i in array) if(array[i][field]==value) return array[i];
 // }
-        
 
 // Imports
 var express = require('express'),
@@ -35,7 +34,7 @@ var info = {
     imageForce : config.image || (config.image = true),
     uptime : new Date,
     files : config.files || (config.files = [ 'png', 'jpg', 'gif' ]),
-    upload : config.upload || (config.upload =  'img/'),
+    upload : config.upload || (config.upload =  './img/'),
     extra : config.extra
 };
 
@@ -49,7 +48,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
 // Upload Dir
-app.use(multer({ dest: '.'+config.upload}));
+app.use(multer({ dest: config.upload}));
 
 // Login valid.
 app.use(function (res,req,next) {
@@ -91,11 +90,11 @@ app.get('/img/:img', function(req,res) {
 
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
-    if (!(req.body.text && (!config.image || req.files["file"])))
+    if (!(req.body.text && (config.image || !req.files["file"])))
         return res.send(400);
     if (req.files["file"] && config.files.indexOf(req.files["file"].originalname.split('.').pop()) == -1)
         return res.send(415);
-    
+
     db.newPost({
         title : req.body.title,
         name : req.body.name,
