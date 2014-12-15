@@ -2,6 +2,10 @@
 
 *v0.1, by phikal*
 
+4jhan, inspired by 4chan, is a minimal server-client network, where a board (/b/, /g/, /pol/,...) are hosted on individual servers.
+
+This is one implementation for the server software and it is lightweight enough to be run on a Raspberry Pi. It requires node.js and was tested on Linux. This is open and unfinished software, expect errors.
+
 ### To start server , type
 
 **`$ ./bin/www`**
@@ -45,22 +49,25 @@
     Built up like this:
 
     ```
-[
-    {
-        "id" : $id,
-        "name" : $name,
-        "text" : $text,
-        "img" : $img,
-        "op" : $op_id,
-        "upload" : $upload
-    },
-    ...
-]
+{
+    "id" : $id,
+    "name" : $name,
+    "text" : $text,
+    "img" : $img,
+    "op" : $op_id,
+    "upload" : $upload,
+    "thread" : [
+        {
+            
+        },
+        ...
+    ]
+}
     ```
 
     To get the image path the client combines the searches for this path (where `upload` is from `GET:/`'s `upload`): `$(server)/c$(upload)/$(id)_$(img)`
 
-* **POST:/img/$img**
+* **`POST:/img/$img`**
 
     Returns image file.
 
@@ -97,9 +104,9 @@ If `pass` is set in config (see below), all paths (except `GET:/`) have to be ac
 
 ---
 
-### Configuration opts:
+### Configuration options:
 
-The default config file is `config.json`.
+The default configuration file is `config.json`.
 
 * `db` String
 
@@ -111,80 +118,81 @@ The default config file is `config.json`.
     * `mongo`
     * `sqlite` (default)
 
-
-* `config.user` String
+* `user` String
 
     MySQL user name (`db` == `mysql` only)
 
-* `config.pass` String
+* `pass` String
 
     MySQL password (`db` == `mysql` only)
 
-* `config.host` String
+* `host` String
 
-    If `db` == `mysql`: MySQL host, default: "localhost".
+    For `mysql`: MySQL host, default: "localhost".
         
-    If `db` == `mongo`: Mongo DB host, database, etc.
+    For `mongo`: Mongo DB host, database, etc.
         
-    If `db` == `sqlite`: Ignored.
+    For `sqlite`: Ignored.
  
-* `config.name` String
+* `name` String
 
     Set server name, default: "Nameless 4jahn server"
 
-* `config.short` String
+* `short` String
 
-    Set short identifier, not unique. Default: "/x/"
+    Set short identifier, not unique. Default: "z"
 
-* `config.admin` String
+* `admin` String
 
-    Set admin name, default `config.anon` or if unset: "Anonymous"
+    Set admin name
 
-* `config.discr` String
+* `discr` String
 
-    A Short server description (Usage, kind, etc. ). Default: "A 4jhan server"
+    A short server description (Usage, kind, etc. ). Default: "A 4jhan server"
 
-* `config.nsfw` Boolean
+* `nsfw` Boolean
 
     Is save for work, default: `false`
 
-* `config.timeout` Integer
+* `timeout` Integer
 
     After how many minuets should a post be deleted? default: `60`
 
-* `config.lang` String
+* `lang` String
 
     Used language, default: "English"
 
-* `config.pass` String
+* `pass` String
 
     Password to access server, default: none (free for all)
     
     HTTP Basic Auth used for authentication
 
-* `config.page` Integer
+* `page` Integer
 
     Posts per page, default: none
     Pages accessed via `GET:/list?page={number}`
     If unset, all pages will be displayed at once
 
-* `config.image` Boolean
+* `image` Boolean
 
     Force image for all posts, default: `true`
 
-* `config.log` Boolean
+* `log` Boolean
 
     Log server requests (morgan used), default: `false`
 
-* `config.extra` String
+* `extra` String
 
     Extra notes for `GET:/`, default: none
 
-* `config.upload` String
+* `upload` String
 
     Upload directory for images, default : `./img/{file}`
+    
+    Change not recommended.
 
-* `config.file` Array
+* `file` Array
 
     A list of accepted file types. Default: [ 'png', 'jpg', 'gif' ]
 
