@@ -3,12 +3,12 @@ var fs = require('fs');
 
 var mysqldb = function () {
 	var db = require('mysql');
-	
+
 	if (!(config ||(config.user && config.pass))) {
 		console.error('config.json not complete');
 		process.exit(1);
 	}
-	
+
 	var connection = mysql.createConnection({
 		host     : config.host,
 		user     : config.user,
@@ -18,7 +18,7 @@ var mysqldb = function () {
 	connection.connect(function(err) {
 		if (err) return console.error('error connecting: ' + err.stack);
 	});
-	
+
 	connection.query('CREATE TABLE IF NOT EXISTS post ('+
 		'id INT NOT NULL AUTO_INCREMENT,'+
 		'title VARCHAR(125),'+
@@ -40,7 +40,7 @@ var mysqldb = function () {
 		'REFERENCES post(id)'+
 		'ON DELETE CASCADE'+
 		');', function (err) { if (err) console.error(err); });
-	
+
 	return {
 		getList : function (page, next) {
 			connection.query(
@@ -48,6 +48,12 @@ var mysqldb = function () {
 				(config.page ? [ (page || 0)*config.page, (page+1 || 1)*config.page ] : []),
 				function(err, row) {
 					if (err) return next(err);
+
+					for (var i in row)
+						for (var k in [i])
+							if (!thread[i][k])
+								delete thread[i][k];
+
 					next(null, row || []);
 			});
 		},
@@ -56,6 +62,15 @@ var mysqldb = function () {
 				if (err || !resp || resp.length == 0) return next(err || new Error('No such thread'));
 				connection.query('SELECT * FROM comment WHERE op = ? ORDER BY upload', [ req.params.id ], function(err, thread) {
 					if (err || !thread) return next(err || new Error('No such thread'));
+
+					for (var i in thread)
+						for (var k in thread[i])
+							if (!thread[i][k])
+								delete thread[i][k];
+					for (var k in resp[0])
+						if (!resp[0][k])
+							delete resp[0][k];
+
 					resp[0].thread = thread;
 					next(null, resp[0]);
 				});
@@ -74,7 +89,7 @@ var mysqldb = function () {
 			});
 		},
 		clear : function () {
-			connection.query('SELECT id, img FROM post WHERE upload < ?', [new Date(new Date() - (1000*60*config.timeout))], function(err, res) {
+			connection.query('SELECT id, img FROM post WHERE upload < ?', [new Date(new Date() - (6000*config.timeout))], function(err, res) {
 				if (err) return;
 				for (var i in res) {
 					connection.query('SELECT img FROM comment WHERE op = ?',[res[i].id], function(err, res) {
@@ -86,7 +101,7 @@ var mysqldb = function () {
 				}
 			});
 		}
-		
+
 	};
 }
 
@@ -112,7 +127,7 @@ var mongodb = function () {
 			}
 		]
 	}));
-	
+
 	return {
 		getList : function (page, next) {
 			if (config.page) Post.find()
@@ -153,7 +168,7 @@ var mongodb = function () {
 			})
 		},
 		clear : function () {
-			Post.find({ "upload": {  $lt: new Date(new Date() - (1000*60*config.timeout)) }},
+			Post.find({ "upload": {  $lt: new Date(new Date() - (6000*config.timeout)) }},
 			function (err, res) {
 				if (err) return;
 				fs.unlink(config.upload+'/'+res.img, function(err) { if (err) console.log(err); });
@@ -163,14 +178,14 @@ var mongodb = function () {
 			Post.remove({ "upload": {  $lt: [new Date(new Date() - (1000*60*config.timeout))] }},
 				function (err) { });
 		}
-		
+
 	};
 }
 
 var sqlitedb = function () {
 	var sqlite3 = require('sqlite3').verbose();
 	var db = new sqlite3.Database('./4jhan.db');
-	
+
 	db.serialize(function() {
 		db.run("CREATE TABLE IF NOT EXISTS post ("+
 			"id INTEGER PRIMARY KEY AUTOINCREMENT,"+
@@ -189,7 +204,7 @@ var sqlitedb = function () {
 			"op INTEGER"+
 		")");
 	});
-	
+
 	return {
 		getList : function (page, next) {
 			db.all(
@@ -197,12 +212,12 @@ var sqlitedb = function () {
 					: "SELECT * from post ORDER BY -upload",
 			function(err,rows){
 				if (err) return next(err);
-				
+
 				for (var i in rows) {
 					rows[i].upload = new Date(rows[i].upload);
 					if (!rows[i].name) delete rows[i].name;
 				}
-					
+
 				next(null, rows || []);
 			});
 		},
@@ -211,14 +226,14 @@ var sqlitedb = function () {
 				if (err) return next(err);
 				db.all("SELECT * FROM comment WHERE op = "+id, function (err, thread) {
 					if (err) return next(err);
-					
+
 					resp[0].upload = new Date(resp[0].upload);
 					if (!resp[0].name) delete resp[0].name;
 					for (var i in thread) {
 						thread[i].upload = new Date(thread[i].upload);
 						if (!thread[0].name) delete thread[0].name;
 					}
-					
+
 					resp[0].thread = thread;
 					next(null, resp[0]);
 				})
@@ -241,7 +256,7 @@ var sqlitedb = function () {
 			});
 		},
 		clear : function () {
-			db.all("SELECT id, img FROM post WHERE upload < ?", new Date() - (1000*60*config.timeout) ,
+			db.all("SELECT id, img FROM post WHERE upload < ?", new Date() - (6000*config.timeout) ,
 			function (err,rows) {
 				console.error(err);
 				if (err) return;
@@ -256,7 +271,7 @@ var sqlitedb = function () {
 				}
 			});
 		}
-		
+
 	};
 }
 

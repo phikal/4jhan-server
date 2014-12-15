@@ -111,11 +111,11 @@ app.post('/upload', function(req,res) {
 
 // Comment on Post, image optional
 app.post('/comment', function(req,res) {
-    if (!(req.body.text && (!config.image || req.files["file"])))
+    if (!req.body.text)
         return res.send(400);
     if (req.files["file"] && config.files.indexOf(req.files["file"].originalname.split('.').pop()) == -1)
         return res.send(415);
-    
+
     db.newComment({
         name : req.body.name,
         text : req.body.text,
