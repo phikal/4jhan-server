@@ -1,199 +1,139 @@
 ## 4jhan node.js server
 
-*v0.1, by phikal*
+*v0.1.1, by phikal*
 
-4jhan, inspired by 4chan, is a minimal server-client network, where a board (/b/, /g/, /pol/,...) are hosted on individual servers.
+4jhan, inspired by [4chan](http://www.4chan.org/),
+is a minimal server-client network, where a board ( f.e.: `/b/`, `/g/`, `/pol/`,... )
+are hosted on individual servers.
+These servers only host [JSON](http://www.json.org/) data and have to be interpreted via clients (native or web). See [paths](#path) for specifics.
 
-This is one implementation for the server software and it is lightweight enough to be run on a Raspberry Pi. It requires node.js and was tested on Linux. This is open and unfinished software, expect errors.
+Databases can be set withing the [config](#config).
+[MySQL](http://www.mysql.com/), [MongoDB](http://www.mongodb.org/) and [SQLite](http://www.sqlite.org/) (default) are currently supported.
 
-### To start server , type
+The server is written in [node.js](http://nodejs.org/) and was tested on Linux (Fedora, Arch, Raspbian). 
+It is lightweight enough to be run on a [Raspberry Pi](http://www.raspberrypi.org/) ( `sqlite` recommended ).
+This is open ( [GPL](/LICENSE), see `LICENSE` ) and unfinished software, **expect errors** and keep updated.
 
-**`$ ./bin/www`**
+Packages have to be installed before using from the project directory via [nmp](https://www.npmjs.com/):
 
----
+`$ npm install`
 
-### Paths:
+### To start server , type: <a name="start"></a>
 
-* **`GET:/`**
+`$ ./bin/www`
 
-    Get server info as JSON Object. Related with `config.json`, definitions below.
+Add `&` to run in background and `> logfile` to output to file.
 
-* **`GET:/list`**
+### Updates (`0.1.0` -> `0.1.1`): <a name="update"></a>
 
-    JSON array of posts.
+* **Reformated and improved `README.md`**
+* Removed passwords (temp)
+* Removed upload option, set to `./img/` (temp)
 
-    Built up like this:
+### Paths: <a name="path"></a>
 
-    ```
-[
-    {
-        "id" : $id,
-        "title" : $title,
-        "name" : $name,
-        "text" : $text,
-        "img" : $img,
-        "upload" $upload
-    },
-    ...
-]
-    ```
+### `GET:/`
 
-    To get the image path the client combines the searches for this path (where `upload` is from `GET:/`'s `upload`): `$(server)/$(upload)/$(id)_$(img)`
+The server information formated as as JSON object:
 
-    If `name` is undefined, use `GET:/`'s `anon`
+| **name** | **type** | **description** | **default** |
+|----------|----------|-----------------|-------------|
+| `name`   | `String` | Server name     | `Nameless 4jhan server` |
+| `short`  | `String` | Short server name  | `z` |
+| `admin`  | `String` | Admin pseudonym/name | |
+| `discription` | `String` | Server description ( f.e.: What is server for? What kind? ) | `A 4jhan server` |
+| `nsfw`   | `Boolean`| Is not server safe for work? | `false` |
+| `timeout` | `Number` | After how many minutes are posts deleted? | `60` |
+| `language` | `String` | Language used on server | `English` |
+| `version` | `String` | Server version |  |
+| `database` | `String` | Database used for server | `sqlite` |
+| `page` | `Number` | Are pages used and items per page | |
+| `imageForce` | `Boolean` | Do posts require images | `true` |
+| `uptime` | `String` | Date on which server was started, [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601) | |
+| `extra` | `String` | Extra description ( rules, attribution, nonsense ) | |
+| `files` | `Array`  | Allowed file types | ` [ 'png', 'jpg', 'gif' ] ` |
 
-* **`GET:/thread/$id`**
+Some values may not be hosted, f.e.: `page`. If that is so, they are ignored ( no pages )
 
-    A JSON list of replies to a post.
+### `GET:/list`
 
-    Built up like this:
-
-    ```
-{
-    "id" : $id,
-    "name" : $name,
-    "text" : $text,
-    "img" : $img,
-    "op" : $op_id,
-    "upload" : $upload,
-    "thread" : [
-        {
-            
-        },
-        ...
-    ]
-}
-    ```
-
-    To get the image path the client combines the searches for this path (where `upload` is from `GET:/`'s `upload`): `$(server)/c$(upload)/$(id)_$(img)`
-
-* **`POST:/img/$img`**
-
-    Returns image file.
-
-* **`POST:/upload`**
-
-    A `multipart/form-data` form.
-
-    **Required:**
-
-    * `text` String
-
-        Containing OP text.
-
-    * `file` File
-
-        The uploaded file
-
-    **Optional:** (Self explanatory)
-
-    * `title` String
-    * `name` String
-
-    The URL variable `url` can be added to redirect user after upload is complete.
-
-* **`POST:/comment`**
-
-    The same as `POST/upload`, except for:
-
-    * `file` is optional
-    * `op` is required, and contains the post id
-    * `title` is ignored
-
-If `pass` is set in config (see below), all paths (except `GET:/`) have to be accessed with `?pass=$password` added to the URL.
-
----
-
-### Configuration options:
-
-The default configuration file is `config.json`.
-
-* `db` String
-
-    Database to be used.
+A JSON array of posts
+This is one post:
     
-    **Options**
+| **name** | **type** | **description** |
+|----------|----------|-----------------|
+| `id`     | `String` | The ID of the post. | 
+| `title`  | `String` | The title of the post, can be undefined |
+| `name`   | `String` | OP's pseudonym |
+| `text`   | `String` | The posts text |
+| `img`    | `String` | An image attached to the post, can be found in `config.upload` |
+| `upload` | `String` | The post upload date, [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601) |
     
-    * `mysql`
-    * `mongo`
-    * `sqlite` (default)
+### `GET:/thread/$id`
 
-* `user` String
+A JSON object contining a post and its comments.
+It is built up just like the table above,
+the only difference is an extra `thread` array, containing the comments.
 
-    MySQL user name (`db` == `mysql` only)
+This is one comment:
 
-* `pass` String
-
-    MySQL password (`db` == `mysql` only)
-
-* `host` String
-
-    For `mysql`: MySQL host, default: "localhost".
-        
-    For `mongo`: Mongo DB host, database, etc.
-        
-    For `sqlite`: Ignored.
- 
-* `name` String
-
-    Set server name, default: "Nameless 4jahn server"
-
-* `short` String
-
-    Set short identifier, not unique. Default: "z"
-
-* `admin` String
-
-    Set admin name
-
-* `discr` String
-
-    A short server description (Usage, kind, etc. ). Default: "A 4jhan server"
-
-* `nsfw` Boolean
-
-    Is save for work, default: `false`
-
-* `timeout` Integer
-
-    After how many minuets should a post be deleted? default: `60`
-
-* `lang` String
-
-    Used language, default: "English"
-
-* `pass` String
-
-    Password to access server, default: none (free for all)
+| **name** | **type** | **description** |
+|----------|----------|-----------------|    
+| `id`     | `String` | The ID of the comment |
+| `name`   | `String` | Commenter's pseudonym |
+| `text`   | `String` | The comments text |
+| `img`    | `String` | An image attached to the post, can be found in `config.upload` |
+| `upload` | `String` | The comment upload date, [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601) |
     
-    HTTP Basic Auth used for authentication
+The server may or may not send extra values, depending on the database used. These can be ignored.
 
-* `page` Integer
+#### `POST:/img/$img`
 
-    Posts per page, default: none
-    Pages accessed via `GET:/list?page={number}`
-    If unset, all pages will be displayed at once
+Returns image file `$img`.
 
-* `image` Boolean
+#### `POST:/upload`
 
-    Force image for all posts, default: `true`
-
-* `log` Boolean
-
-    Log server requests (morgan used), default: `false`
-
-* `extra` String
-
-    Extra notes for `GET:/`, default: none
-
-* `upload` String
-
-    Upload directory for images, default : `./img/{file}`
+A `multipart/form-data` form used for uploading posts.
     
-    Change not recommended.
+| **name** | **type** | **description** |
+|----------|----------|-----------------| 
+| `text`   | `String` | Containing post text. |
+| `file`   | `File`   | *file-to-upload*, >1MB. |
+| `title`  | `String` | Post title |
+| `name`   | `String` | OP's pseudonym |
+| `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
 
-* `file` Array
+#### `POST:/comment`
 
-    A list of accepted file types. Default: [ 'png', 'jpg', 'gif' ]
+| **name** | **type** | **description** |
+|----------|----------|-----------------| 
+| `text`   | `String` | Containing post text. |
+| `file`   | `File`   | *file-to-upload*, >1MB. Optional |
+| `name`   | `String` | OP's pseudonym |
+| `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
+| `op`     | `String` | ID of the post to add comment to. |
 
-License: GPL
+### Configuration: <a name="config"></a>
+
+The configuration file is `config.json`.
+
+| **name** | **type** | **description** |
+|----------|----------|-----------------| 
+| `db`     | `String` | Database to use, see options above |
+| `user`   | `String` | MySQL user, if MySQL is used |
+| `pass`   | `String` | MySQL password, if MySQL is used |
+| `host`   | `String` | MySQL or MongoDB database URL |
+| `name`   | `String` | Server name |
+| `short`  | `String` | Short server name |
+| `admin`  | `String` | Admin pseudonym/name |
+| `discr`  | `String` | Server description |
+| `nsfw`   | `Boolean` | Is not server safe for work? |
+| `timeout` | `Number` | After how many minutes are posts deleted? |
+| `language` | `String` | Language used on server |
+| `page` | `Number` | Are pages used and items per page |
+| `image` | `Boolean` | Do posts require images |
+| `log` | `String` | Log HTTP requests and [Morgan format](https://github.com/expressjs/morgan) |
+| `extra` | `String` | Extra description |
+| `file` | `Array` | Allowed file types |
+
+The config file is not necessary, it will default to values specified in `GET:/` if some or all are not defined. ( Not recommended )

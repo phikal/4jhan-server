@@ -1,6 +1,6 @@
 {
   "name": "4jhan",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -9,8 +9,6 @@
     "express": "~4.2.0",
     "morgan": "~1.0.0",
     "body-parser": "~1.0.0",
-    "debug": "~0.7.4",
-    "multer" : "~0.1.6",
     "basic-auth": "~1.0.0",
     "mysql": "~2.5.2",
     "mongoose": "~3.8.20",

@@ -1,19 +1,14 @@
 
 // NODE.JS 4JHAN SERVER
-// VERSION 0.1.0
+// VERSION 0.1.1
 // WRITTEN BY PHIKAL
 // LICENCE: GPL
-
-// var get = function(field, value, array) {
-//     for(var i in array) if(array[i][field]==value) return array[i];
-// }
 
 // Imports
 var express = require('express'),
     path = require('path'),
     fs = require('fs'),
-    bodyParser = require('body-parser'),
-    multer = require('multer');
+    bodyParser = require('body-parser');
 
 // Get config
 var config = require('./config.json') || {};
@@ -21,21 +16,19 @@ var config = require('./config.json') || {};
 // Info & config setup for 'GET:/'
 var info = {
     name : config.name || "Nameless 4jhan server",
-    short : config.short || "/z/",
-    admin : config.admin || config.anon || (config.anon = "Anonymous"),
+    short : config.short || "z",
+    admin : config.admin,
     discription : config.discr || "A 4jhan server",
     nsfw : config.nsfw || false,
     timeout : config.timeout || (config.timeout = 60),
     language : config.lang || "English",
-    password : (config.password != undefined),
     version : require('./package.json').version,
     database : config.db || (config.db = "sqlite"),
     page : config.page,
     imageForce : config.image || (config.image = true),
     uptime : new Date,
-    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ]),
-    upload : config.upload || (config.upload =  './img/'),
-    extra : config.extra
+    extra : config.extra,
+    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ])
 };
 
 // DB setup
@@ -43,18 +36,12 @@ var db = require("./db")(config.db);
 
 // Express setup
 var app = express();
-if (config.log) app.use(require('morgan')('dev'));
+if (config.log) app.use(require('morgan')(config.log || 'dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
 // Upload Dir
-app.use(multer({ dest: config.upload}));
-
-// Login valid.
-app.use(function (res,req,next) {
-    if (config.password && auth(req).pass != config.pass) return res.send(401);
-    next();
-})
+app.use(multer({ dest: './img/'}));
 
 // Enable CORS
 app.use(function(req, res, next) {
@@ -85,12 +72,12 @@ app.get('/thread/:id', function(req,res) {
 });
 
 app.get('/img/:img', function(req,res) {
-    res.sendfile("img/" + req.params.img);
+    res.sendfile('./img/'+req.params.img);
 });
 
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
-    if (!(req.body.text && (config.image || !req.files["file"])))
+    if (!(req.body.text && (!config.image || req.files["file"])))
         return res.send(400);
     if (req.files["file"] && config.files.indexOf(req.files["file"].originalname.split('.').pop()) == -1)
         return res.send(415);

@@ -1,3 +1,10 @@
+
+// NODE.JS 4JHAN SERVER
+// VERSION 0.1.1
+// WRITTEN BY PHIKAL
+// LICENCE: GPL
+
+
 var config = require('./config.json');
 var fs = require('fs');
 
