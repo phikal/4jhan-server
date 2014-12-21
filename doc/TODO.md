@@ -1,11 +1,14 @@
 ## TODO
 
-These are features which will be implemented in future versions.
-The check-box indicates if it has been started. 
+**These are features which will be implemented in future versions.**
 
-- [ ] Tripcodes option
-- [ ] Password
-- [ ] Set local image directory
-- [ ] Flair option
-- [ ] JSON database option
-- [ ] PostgreSQL database option
+- Password
+- Flair option
+- JSON database option
+- PostgreSQL database option
+- Monderator and admin
+- Pluginable bots
+- Sticky posts
+- https option
+- Markdown option
+- Secure tripcode option 

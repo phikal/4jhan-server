@@ -1,8 +1,9 @@
 
 // NODE.JS 4JHAN SERVER
-// VERSION 0.1.1
 // WRITTEN BY PHIKAL
 // LICENCE: GPL
+
+// Main server file
 
 // Imports
 var express = require('express'),
@@ -27,20 +28,20 @@ var info = {
     database : config.db || (config.db = "sqlite"),
     page : config.page,
     imageForce : config.image || (config.image = true),
-    uptime : new Date,
+    uptime : new Date(),
     extra : config.extra,
     files : config.files || (config.files = [ 'png', 'jpg', 'gif' ])
 };
 
 // DB setup
-var db = require("./db")(config.db);
+var db = require("./lib/db")(config.db);
 
 // Express setup
 var app = express();
-if (config.log) app.use(require('morgan')(config.log || 'dev'));
+if (config.log) app.use((require('morgan'))(config.log));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(multer({ dest: './img/'}));
+app.use(multer({ dest: config.upload || './img/'}));
 
 // Enable CORS
 app.use(function(req, res, next) {
@@ -67,26 +68,27 @@ app.get('/thread/:id', function(req,res) {
     db.getThread(req.params.id, function (err, resp) {
         if (err) return res.send(500);
         res.send(resp);
-    })
+    });
 });
 
 app.get('/img/:img', function(req,res) {
-    res.sendfile('./img/'+req.params.img);
+    res.sendfile((config.upload || './img/')+req.params.img);
 });
 
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
-    if (!(req.body.text && (!config.image || req.files["file"])))
+    if (!(req.body.text && (!config.image || req.files.file)))
         return res.send(400);
-    if (req.files["file"] && config.files.indexOf(req.files["file"].originalname.split('.').pop()) == -1)
+    if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
 
     db.newPost({
         title : req.body.title,
         name : req.body.name,
         text : req.body.text,
-        img : req.files["file"] ? req.files["file"].name : undefined,
-        upload : new Date
+        img : req.files.file ? req.files.file.name : undefined,
+		pass : req.body.pass,
+        upload : new Date()
     }, function (err) {
         if (err) return res.send(500);
         if (req.body.next) return res.redirect(req.body.next);
@@ -98,15 +100,17 @@ app.post('/upload', function(req,res) {
 app.post('/comment', function(req,res) {
     if (!req.body.text)
         return res.send(400);
-    if (req.files["file"] && config.files.indexOf(req.files["file"].originalname.split('.').pop()) == -1)
+    if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
-
-    db.newComment({
+        
+    
+	db.newComment({
         name : req.body.name,
         text : req.body.text,
         op :   req.body.op,
-        img :  req.files["file"] ? req.files["file"].name : undefined,
-        upload : new Date,
+        img :  req.files.file ? req.files.file.name : undefined,
+		pass : req.body.pass,
+        upload : new Date(),
     }, function (err) {
         if (err) return res.send(500);
         if (req.body.next) return res.redirect(req.body.next);

@@ -11,7 +11,7 @@ The server information formated as as JSON object:
 | `name`   | `String` | Server name     | `Nameless 4jhan server` |
 | `short`  | `String` | Short server name  | `z` |
 | `admin`  | `String` | Admin pseudonym/name | |
-| `discription` | `String` | Server description ( f.e.: What is server for? What kind? ) | `A 4jhan server` |
+| `discription` | `String` | Server description (f.e.: What is server for? What kind?) | `A 4jhan server` |
 | `nsfw`   | `Boolean`| Is not server safe for work? | `false` |
 | `timeout` | `Number` | After how many minutes are posts deleted? | `60` |
 | `language` | `String` | Language used on server | `English` |
@@ -20,10 +20,10 @@ The server information formated as as JSON object:
 | `page` | `Number` | Are pages used and items per page | |
 | `imageForce` | `Boolean` | Do posts require images | `true` |
 | `uptime` | `String` | Date on which server was started, [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601) | |
-| `extra` | `String` | Extra description ( rules, attribution, nonsense ) | |
+| `extra` | `String` | Extra description (rules, attribution, nonsense) | |
 | `files` | `Array`  | Allowed file types | ` [ 'png', 'jpg', 'gif' ] ` |
 
-Some values may not be hosted, f.e.: `page`. If that is so, they are ignored ( no pages )
+Some values may not be hosted, f.e.: `page`. If that is so, they are ignored (no pages)
 
 #### `GET:/list`
 
@@ -72,6 +72,7 @@ A `multipart/form-data` form used for uploading posts.
 | `title`  | `String` | Post title |
 | `name`   | `String` | OP's pseudonym |
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
+| `pass`    | `String` | A password used for generating tripcodes |
 
 ##### `POST:/comment`
 
@@ -82,3 +83,4 @@ A `multipart/form-data` form used for uploading posts.
 | `name`   | `String` | OP's pseudonym |
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
 | `op`     | `String` | ID of the post to add comment to. |
+| `pass`   | `String` | A password used for generating tripcodes |

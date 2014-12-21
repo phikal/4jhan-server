@@ -20,5 +20,7 @@ The configuration file is `config.json`. It has to be places in the root project
 | `log` | `String` | Log HTTP requests and [Morgan format](https://github.com/expressjs/morgan) |
 | `extra` | `String` | Extra description |
 | `file` | `Array` | Allowed file types |
+| `tripcode` | `Boolean` | Are tripcodes enables |
+| `upload` | `String` | Local directory for image uplaod, `./img/` as default |
 
-The config file is not necessary, it will default to values specified in `GET:/` if some or all are not defined. ( Not recommended )
+A config file is neccecary, althoug it can only contain `{}`. If that is so, the default options will be used (Not recomended).
