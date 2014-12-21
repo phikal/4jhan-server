@@ -8,7 +8,8 @@
 var express = require('express'),
     path = require('path'),
     fs = require('fs'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    multer = require('multer');
 
 // Get config
 var config = require('./config.json') || {};
@@ -39,8 +40,6 @@ var app = express();
 if (config.log) app.use(require('morgan')(config.log || 'dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-
-// Upload Dir
 app.use(multer({ dest: './img/'}));
 
 // Enable CORS
