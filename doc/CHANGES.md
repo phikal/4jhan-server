@@ -1,5 +1,11 @@
 ## Updates
 
+### Updates (`0.1.3` -> `0.1.4`)
+
+* Changed date format from `ISO 8601` to `RFC 822`
+* Doc fixes
+* Sample fixes
+
 ### Updates (`0.1.2` -> `0.1.3`)
 
 * *jshint*ed javascript code

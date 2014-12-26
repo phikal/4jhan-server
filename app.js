@@ -28,7 +28,7 @@ var info = {
     database : config.db || (config.db = "sqlite"),
     page : config.page,
     imageForce : config.image || (config.image = true),
-    uptime : new Date(),
+    uptime : new Date().toUTCString(),
     extra : config.extra,
     files : config.files || (config.files = [ 'png', 'jpg', 'gif' ])
 };
@@ -59,6 +59,8 @@ app.get('/', function(req,res) {
 app.get('/list', function(req,res) {
     db.getList(req.query.page, function (err, resp) {
         if (err) res.send(500);
+		for (var i in resp.thread) 
+			resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
         res.send(resp);
     });
 });
@@ -67,6 +69,11 @@ app.get('/list', function(req,res) {
 app.get('/thread/:id', function(req,res) {
     db.getThread(req.params.id, function (err, resp) {
         if (err) return res.send(500);
+
+		resp = new Date(resp.upload).toUTCString();
+		for (var i in resp.thread) 
+			resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
+
         res.send(resp);
     });
 });

@@ -36,8 +36,8 @@ This is one post:
 | `title`  | `String` | The title of the post, can be undefined |
 | `name`   | `String` | OP's pseudonym |
 | `text`   | `String` | The posts text |
-| `img`    | `String` | An image attached to the post, can be found in `config.upload` |
-| `upload` | `String` | The post upload date, [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601) |
+| `img`    | `String` | An image attached to the post, can be found in `/img/$img` |
+| `upload` | `String` | The post upload date, [RFC 822 format](https://www.ietf.org/rfc/rfc0822.txt) |
 
 #### `GET:/thread/$id`
 
@@ -53,7 +53,7 @@ This is one comment:
 | `name`   | `String` | Commenter's pseudonym |
 | `text`   | `String` | The comments text |
 | `img`    | `String` | An image attached to the post, can be found in `GET:/img/$img` |
-| `upload` | `String` | The comment upload date, [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601) |
+| `upload` | `String` | The post upload date, [RFC 822 format](https://www.ietf.org/rfc/rfc0822.txt) |
 
 The server may or may not send extra values, depending on the database used. These can be ignored.
 
