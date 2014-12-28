@@ -68,7 +68,7 @@ A `multipart/form-data` form used for uploading posts.
 | **name** | **type** | **description** |
 |----------|----------|-----------------| 
 | `text`   | `String` | Containing post text. |
-| `file`   | `File`   | *file-to-upload*, >1MB. |
+| `file`   | `File`   | *file-to-upload*, <1MB. |
 | `title`  | `String` | Post title |
 | `name`   | `String` | OP's pseudonym |
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
@@ -79,7 +79,7 @@ A `multipart/form-data` form used for uploading posts.
 | **name** | **type** | **description** |
 |----------|----------|-----------------| 
 | `text`   | `String` | Containing post text. |
-| `file`   | `File`   | *file-to-upload*, >1MB. Optional |
+| `file`   | `File`   | *file-to-upload*, <1MB. Optional |
 | `name`   | `String` | OP's pseudonym |
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
 | `op`     | `String` | ID of the post to add comment to. |

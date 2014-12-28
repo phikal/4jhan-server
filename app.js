@@ -70,7 +70,7 @@ app.get('/thread/:id', function(req,res) {
     db.getThread(req.params.id, function (err, resp) {
         if (err) return res.send(500);
 
-		resp = new Date(resp.upload).toUTCString();
+		resp.upload = new Date(resp.upload).toUTCString();
 		for (var i in resp.thread) 
 			resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
 

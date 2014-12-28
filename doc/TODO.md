@@ -15,3 +15,4 @@
 - Report
 - Theme
 - Chaptcha
+- CDN
