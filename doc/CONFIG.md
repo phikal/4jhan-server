@@ -24,3 +24,7 @@ The configuration file is `config.json`. It has to be places in the root project
 | `upload` | `String` | Local directory for image uplaod, `./img/` as default |
 
 A config file is neccecary, althoug it can only contain `{}`. If that is so, the default options will be used (Not recomended).
+
+#### Robots.txt
+
+If you want to add a `robots.txt` file, add a `robots.txt` file to the project root. The server will host it if it found.

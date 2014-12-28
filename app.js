@@ -109,7 +109,6 @@ app.post('/comment', function(req,res) {
         return res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
-        
     
 	db.newComment({
         name : req.body.name,
@@ -123,6 +122,10 @@ app.post('/comment', function(req,res) {
         if (req.body.next) return res.redirect(req.body.next);
         res.send();
     });
+});
+
+if (fs.existsSync('./robots.txt')) app.get('/robots.txt', function(req,res) {
+	 res.sendfile('./robots.txt');
 });
 
 // Delete too old posts. (set by config.timeout)

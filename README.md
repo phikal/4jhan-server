@@ -1,7 +1,5 @@
 ## 4jhan node.js server
 
-*v0.1.3, by phikal*
-
 4jhan, inspired by [4chan](http://www.4chan.org/),
 is a minimal server-client network, where a board ( f.e.: `/b/`, `/g/`, `/pol/`,etc.)
 are hosted on individual servers.

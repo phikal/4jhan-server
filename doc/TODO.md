@@ -12,3 +12,6 @@
 - https option
 - Markdown option
 - Secure tripcode option 
+- Report
+- Theme
+- Chaptcha
