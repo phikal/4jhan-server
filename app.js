@@ -69,6 +69,7 @@ app.get('/list', function(req,res) {
 app.get('/thread/:id', function(req,res) {
     db.getThread(req.params.id, function (err, resp) {
         if (err) return res.send(500);
+		if (!resp) return res.send(404);
 
 		resp.upload = new Date(resp.upload).toUTCString();
 		for (var i in resp.thread) 
