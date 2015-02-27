@@ -1,5 +1,13 @@
 ## Updates
 
+## `1.0.0`
+
+* Switch to MIT License
+* New `package.json`
+* Refurbished code for branching model
+* Added new logo
+* Added CONTRIBUTING.md
+
 ### `0.1.6`
 
 * Bug and doc fixes

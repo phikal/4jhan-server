@@ -1,7 +1,6 @@
 
 // NODE.JS 4JHAN SERVER
-// WRITTEN BY PHIKAL
-// LICENCE: GPL
+// LICENCE: MIT
 
 // Main server file
 
@@ -10,7 +9,8 @@ var express = require('express'),
     path = require('path'),
     fs = require('fs'),
     bodyParser = require('body-parser'),
-    multer = require('multer');
+    multer = require('multer'),
+    auth = require('basic-auth');
 
 // Get config
 var config = require('./config.json') || {};
@@ -45,9 +45,10 @@ app.use(multer({ dest: config.upload || './img/'}));
 
 // Enable CORS
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    req.auth = auth(req);
+    next();
 });
 
 // Get server info
@@ -59,7 +60,7 @@ app.get('/', function(req,res) {
 app.get('/list', function(req,res) {
     db.getList(req.query.page, function (err, resp) {
         if (err) res.send(500);
-		for (var i in resp.thread) 
+		for (var i in resp.thread)
 			resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
         res.send(resp);
     });
@@ -72,7 +73,7 @@ app.get('/thread/:id', function(req,res) {
 		if (!resp) return res.send(404);
 
 		resp.upload = new Date(resp.upload).toUTCString();
-		for (var i in resp.thread) 
+		for (var i in resp.thread)
 			resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
 
         res.send(resp);
@@ -110,7 +111,7 @@ app.post('/comment', function(req,res) {
         return res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
-    
+
 	db.newComment({
         name : req.body.name,
         text : req.body.text,
@@ -125,6 +126,7 @@ app.post('/comment', function(req,res) {
     });
 });
 
+// Load robots.txt file if it exists
 if (fs.existsSync('./robots.txt')) app.get('/robots.txt', function(req,res) {
 	 res.sendfile('./robots.txt');
 });
