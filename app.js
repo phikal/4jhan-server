@@ -11,7 +11,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     multer = require('multer'),
     auth = require('basic-auth');
-    marked = require('marked');
+    marked = require('marked-no-images');
 
 // Get config
 var config = require('./config.json') || {};
