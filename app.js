@@ -11,6 +11,7 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     multer = require('multer'),
     auth = require('basic-auth');
+    marked = require('marked');
 
 // Get config
 var config = require('./config.json') || {};
@@ -42,6 +43,11 @@ if (config.log) app.use((require('morgan'))(config.log));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(multer({ dest: config.upload || './img/'}));
+
+// Markdown setup
+if (config.sanitize) {
+  marked.setOptions({ sanitize: true });
+}
 
 // Enable CORS
 app.use(function(req, res, next) {
@@ -94,7 +100,7 @@ app.post('/upload', function(req,res) {
     db.newPost({
         title : req.body.title,
         name : req.body.name,
-        text : req.body.text,
+        text : marked(req.body.text),
         img : req.files.file ? req.files.file.name : undefined,
 		pass : req.body.pass,
         upload : new Date()
@@ -114,7 +120,7 @@ app.post('/comment', function(req,res) {
 
 	db.newComment({
         name : req.body.name,
-        text : req.body.text,
+        text : marked(req.body.text),
         op :   req.body.op,
         img :  req.files.file ? req.files.file.name : undefined,
 		pass : req.body.pass,
