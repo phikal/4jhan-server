@@ -10,14 +10,11 @@ var express = require('express'),
     fs = require('fs'),
     bodyParser = require('body-parser'),
     multer = require('multer'),
-    auth = require('basic-auth');
+    auth = require('basic-auth'),
+    marked = require('marked-no-images');
 
 // Get config
 var config = require('./config.json') || {};
-
-// Markdown conditional require
-if (config.markdown)
-    marked = require('marked-no-images');
 
 // Info & config setup for 'GET:/'
 var info = {
@@ -48,8 +45,8 @@ app.use(bodyParser.urlencoded());
 app.use(multer({ dest: config.upload || './img/'}));
 
 // Markdown setup
-if (config.sanitize && config.markdown)
-  marked.setOptions({ sanitize: true });
+if (config.markdown)
+    marked.setOptions({ sanitize: true });
 
 // Enable CORS
 app.use(function(req, res, next) {
@@ -94,16 +91,15 @@ app.get('/img/:img', function(req,res) {
 
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
-    if (!req.body.text && (!config.image || req.files.file)))
+    if (!req.body.text && (!config.image || req.files.file))
         return res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
-    var text = config.markdown ? marked(req.body.text) : req.body.text;
 
     db.newPost({
         title : req.body.title,
         name : req.body.name,
-        text : text,
+        text : config.markdown ? marked(req.body.text) : req.body.text,
         img : req.files.file ? req.files.file.name : undefined,
 		pass : req.body.pass,
         upload : new Date()
@@ -120,11 +116,10 @@ app.post('/comment', function(req,res) {
         return res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
-    var text = config.markdown ? marked(req.body.text) : req.body.text;
 
 	db.newComment({
         name : req.body.name,
-        text : text,
+        text : config.markdown ? marked(req.body.text) : req.body.text,
         op :   req.body.op,
         img :  req.files.file ? req.files.file.name : undefined,
 		pass : req.body.pass,

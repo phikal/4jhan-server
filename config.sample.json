@@ -3,7 +3,6 @@
     "disrc" : "this is a testing server...",
     "extra" : "this should be changed",
     "markdown": false,
-    "sanitize" : true,
     "short" : "t",
     "name"  : "4jhan testing server"
 }

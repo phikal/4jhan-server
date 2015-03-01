@@ -3,7 +3,7 @@
 The configuration file is `config.json`. It has to be places in the root project directory.
 
 | **name** | **type** | **description** |
-|----------|----------|-----------------| 
+|----------|----------|-----------------|
 | `db`     | `String` | Database to use, see options above |
 | `user`   | `String` | MySQL user, if MySQL is used |
 | `pass`   | `String` | MySQL password, if MySQL is used |
@@ -22,6 +22,7 @@ The configuration file is `config.json`. It has to be places in the root project
 | `file` | `Array` | Allowed file types |
 | `tripcode` | `Boolean` | Are tripcodes enables |
 | `upload` | `String` | Local directory for image uplaod, `./img/` as default |
+| `markdown` | `Boolean` | Enable Markdown input (HTML output). |
 
 A config file is neccecary, althoug it can only contain `{}`. If that is so, the default options will be used (Not recomended).
 
