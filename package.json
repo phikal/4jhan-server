@@ -1,34 +1,35 @@
 {
-      "name": "4jhan-server",
-      "version": "1.0.0",
-      "description": "A minimal server for 4jhan boards",
-      "main": "./bin/www",
-      "directories": {
-          "doc": "docs",
-          "lib": "lib",
-          "bin": "bin"
-      },
-      "scripts": {
-          "test": "echo \"Error: no test specified\" && exit 1"
-      },
-      "repository": {
-          "type": "git",
-          "url": "https://github.com/phikal/4jhan-server"
-      },
-      "dependencies": {
-          "express": "~4.2.0",
-          "morgan": "~1.0.0",
-          "body-parser": "~1.0.0",
-          "multer": "~0.1.6",
-          "sqlite3": "~3.0.4",
-          "basic-auth" : "~1.0.0"
-    },
-    "keywords": [
-        "4jhan",
-        "imageboard",
-        "server",
-        "json"
-    ],
-    "author": "Philip Kaludercic <philippija@gmail.com>",
-    "license": "MIT"
+  "name": "4jhan-server",
+  "version": "1.0.0",
+  "description": "A minimal server for 4jhan boards",
+  "main": "./bin/www",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib",
+    "bin": "bin"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phikal/4jhan-server"
+  },
+  "dependencies": {
+    "basic-auth": "~1.0.0",
+    "body-parser": "~1.0.0",
+    "express": "~4.2.0",
+    "marked-no-images": "~0.3.3",
+    "morgan": "~1.0.0",
+    "multer": "~0.1.6",
+    "sqlite3": "~3.0.4"
+  },
+  "keywords": [
+    "4jhan",
+    "imageboard",
+    "server",
+    "json"
+  ],
+  "author": "Philip Kaludercic <philippija@gmail.com>",
+  "license": "MIT"
 }
