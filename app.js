@@ -46,7 +46,6 @@ if (config.log) app.use((require('morgan'))(config.log));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(multer({ dest: config.upload || './img/'}));
-app.use('/', express.static(__dirname + '/public'));
 
 // Markdown setup
 if (config.sanitize && config.markdown)
