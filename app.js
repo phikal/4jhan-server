@@ -95,9 +95,9 @@ app.get('/img/:img', function(req,res) {
 
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
-    if (!req.body.text)
+    if (!req.body.text && (!config.image || req.files.file)))
         return res.send(400);
-    if (req.files.file)
+    if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
     var text = config.markdown ? marked(req.body.text) : req.body.text;
 
