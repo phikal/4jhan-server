@@ -1,6 +1,6 @@
 {
     "admin" : "admo",
-    "desrc" : "this is a testing server...",
+    "descr" : "this is a testing server...",
     "extra" : "this should be changed",
     "markdown": false,
     "short" : "t",
