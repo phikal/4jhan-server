@@ -37,12 +37,21 @@ var info = {
 // DB setup
 var db = require("./lib/db")(config.db);
 
+// Imager setup
+if (config.thumbs)
+  var imager = require("./lib/imager");
+
 // Express setup
 var app = express();
 if (config.log) app.use((require('morgan'))(config.log));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(multer({ dest: config.upload || './img/'}));
+app.use(multer({
+  dest: config.upload || './img/',
+  rename: function (fieldname, filename, req, res) {
+    return Date.now()
+  }
+}));
 
 // Markdown setup
 if (config.markdown)
@@ -89,19 +98,25 @@ app.get('/img/:img', function(req,res) {
     res.sendfile((config.upload || './img/')+req.params.img);
 });
 
+app.get('/thumb/:thumb', function(req,res) {
+    res.sendfile((config.upload || './thumbs/')+req.params.thumb);
+});
+
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
+    filename = req.files.file.name;
     if (!req.body.text && (!config.image || req.files.file))
         return res.send(400);
-    if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
+    if (req.files.file && config.files.indexOf(filename.split('.').pop()) == -1)
         return res.send(415);
+        imager.createThumb(filename);
 
     db.newPost({
         title : req.body.title,
         name : req.body.name,
         text : config.markdown ? marked(req.body.text) : req.body.text,
-        img : req.files.file ? req.files.file.name : undefined,
-		pass : req.body.pass,
+        img : req.files.file ? filename : undefined,
+        pass : req.body.pass,
         upload : new Date()
     }, function (err) {
         if (err) return res.send(500);
@@ -112,17 +127,19 @@ app.post('/upload', function(req,res) {
 
 // Comment on Post, image optional
 app.post('/comment', function(req,res) {
+    filename = req.files.file.name;
     if (!req.body.text)
         return res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
+        imager.createThumb(filename);
 
 	db.newComment({
         name : req.body.name,
         text : config.markdown ? marked(req.body.text) : req.body.text,
         op :   req.body.op,
-        img :  req.files.file ? req.files.file.name : undefined,
-		pass : req.body.pass,
+        img :  req.files.file ? filename : undefined,
+        pass : req.body.pass,
         upload : new Date(),
     }, function (err) {
         if (err) return res.send(500);
