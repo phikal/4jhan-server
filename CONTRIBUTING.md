@@ -1,6 +1,6 @@
 # How to Contribute
 
-<img src="./4jhan.png" align="left" height="150" width="150"/>\
+<img src="./4jhan.png" align="left" height="150" width="150"/>
 
 Support in fixing bugs, improving on existing features, suggesting new features, etc. is welcome, since it is a open source project after all. However a certain code standard should be maintained, which will be specified in this document.
 

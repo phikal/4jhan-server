@@ -32,12 +32,13 @@ This is one post:
 
 | **name** | **type** | **description** |
 |----------|----------|-----------------|
-| `id`     | `String` | The ID of the post. | 
+| `id`     | `String` | The ID of the post. |
 | `title`  | `String` | The title of the post, can be undefined |
 | `name`   | `String` | OP's pseudonym |
 | `text`   | `String` | The posts text |
 | `img`    | `String` | An image attached to the post, can be found in `/img/$img` |
 | `upload` | `String` | The post upload date, [RFC 822 format](https://www.ietf.org/rfc/rfc0822.txt) |
+| `tripcode` | `String` | Commenter's tripcode authentication |
 
 #### `GET:/thread/$id`
 
@@ -48,12 +49,13 @@ the only difference is an extra `thread` array, containing the comments.
 This is one comment:
 
 | **name** | **type** | **description** |
-|----------|----------|-----------------|    
+|----------|----------|-----------------|
 | `id`     | `String` | The ID of the comment |
 | `name`   | `String` | Commenter's pseudonym |
 | `text`   | `String` | The comments text |
 | `img`    | `String` | An image attached to the post, can be found in `GET:/img/$img` |
 | `upload` | `String` | The post upload date, [RFC 822 format](https://www.ietf.org/rfc/rfc0822.txt) |
+| `tripcode` | `String` | Commenter's tripcode authentication |
 
 The server may or may not send extra values, depending on the database used. These can be ignored.
 
@@ -66,21 +68,19 @@ Returns image file `$img`.
 A `multipart/form-data` form used for uploading posts.
 
 | **name** | **type** | **description** |
-|----------|----------|-----------------| 
+|----------|----------|-----------------|
 | `text`   | `String` | Containing post text. |
 | `file`   | `File`   | *file-to-upload*, <1MB. |
 | `title`  | `String` | Post title |
-| `name`   | `String` | OP's pseudonym |
+| `name`   | `String` | OP's pseudonym, format: `name#tripcode` |
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
-| `pass`    | `String` | A password used for generating tripcodes |
 
 ##### `POST:/comment`
 
 | **name** | **type** | **description** |
-|----------|----------|-----------------| 
+|----------|----------|-----------------|
 | `text`   | `String` | Containing post text. |
 | `file`   | `File`   | *file-to-upload*, <1MB. Optional |
-| `name`   | `String` | OP's pseudonym |
+| `name`   | `String` | Commenter's pseudonym, format: `name#tripcode`|
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
 | `op`     | `String` | ID of the post to add comment to. |
-| `pass`   | `String` | A password used for generating tripcodes |

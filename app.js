@@ -11,7 +11,8 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     multer = require('multer'),
     auth = require('basic-auth'),
-    marked = require('marked-no-images');
+    marked = require('marked-no-images'),
+    crypto = require('crypto');
 
 // Get config
 var config = require('./config.json') || {};
@@ -31,7 +32,8 @@ var info = {
     imageForce : config.image || (config.image = true),
     uptime : new Date().toUTCString(),
     extra : config.extra,
-    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ])
+    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ]),
+    tripcode : config.tripcode
 };
 
 // DB setup
@@ -47,6 +49,15 @@ app.use(multer({ dest: config.upload || './img/'}));
 // Markdown setup
 if (config.markdown)
     marked.setOptions({ sanitize: true });
+
+// Name parsing & tripcode gen
+var regname = /^([^#]*)(#.*)?$/;
+var nameparse = function(name) {
+	if (!config.tripcode) return name.substr(0, namew.indexOf('#'));
+    var parts = name.match(regname);
+    if (!parts[2]) return [parts[1], null];
+	return [parts[1], crypto.pbkdf2Sync(parts[1],parts[2], 3, 10).toString('base64').substring(0,9)];
+};
 
 // Enable CORS
 app.use(function(req, res, next) {
@@ -96,13 +107,14 @@ app.post('/upload', function(req,res) {
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
 
+    var parts = nameparse(req.body.name);
     db.newPost({
         title : req.body.title,
-        name : req.body.name,
+        name : parts[0],
         text : config.markdown ? marked(req.body.text) : req.body.text,
         img : req.files.file ? req.files.file.name : undefined,
-		pass : req.body.pass,
-        upload : new Date()
+        upload : new Date(),
+        tripcode : parts[1]
     }, function (err) {
         if (err) return res.send(500);
         if (req.body.next) return res.redirect(req.body.next);
@@ -117,13 +129,14 @@ app.post('/comment', function(req,res) {
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
 
+    var parts = nameparse(req.body.name);
 	db.newComment({
-        name : req.body.name,
+        name : parts[0],
         text : config.markdown ? marked(req.body.text) : req.body.text,
         op :   req.body.op,
         img :  req.files.file ? req.files.file.name : undefined,
-		pass : req.body.pass,
         upload : new Date(),
+        tripcode : parts[1]
     }, function (err) {
         if (err) return res.send(500);
         if (req.body.next) return res.redirect(req.body.next);
