@@ -101,7 +101,7 @@ if (config.thumbs) {
 }
 
 app.get('/thumb/:thumb', function(req,res) {
-    res.sendfile((config.upload || './thumbs/')+req.params.thumb);
+    res.sendfile((config.upload || './thumb/')+req.params.thumb);
 });
 
 // Upload post (and image if config.image)
