@@ -92,9 +92,9 @@ app.get('/img/:img', function(req,res) {
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
     if (!req.body.text && (!config.image || req.files.file))
-        return res.send(400);
+        req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
-        return res.send(415);
+        req.body.url ? res.redirect(req.body.url) : res.send(415);
 
     db.newPost({
         title : req.body.title,
@@ -113,9 +113,9 @@ app.post('/upload', function(req,res) {
 // Comment on Post, image optional
 app.post('/comment', function(req,res) {
     if (!req.body.text)
-        return res.send(400);
+        req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
-        return res.send(415);
+        req.body.url ? res.redirect(req.body.url) : res.send(415);
 
 	db.newComment({
         name : req.body.name,
