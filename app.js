@@ -94,9 +94,11 @@ app.get('/thread/:id', function(req,res) {
     });
 });
 
-app.get('/img/:img', function(req,res) {
+if (config.thumbs) {
+  app.get('/img/:img', function(req,res) {
     res.sendfile((config.upload || './img/')+req.params.img);
-});
+  });
+}
 
 app.get('/thumb/:thumb', function(req,res) {
     res.sendfile((config.upload || './thumbs/')+req.params.thumb);
