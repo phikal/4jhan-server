@@ -11,7 +11,7 @@ The configuration file is `config.json`. It has to be places in the root project
 | `name`   | `String` | Server name |
 | `short`  | `String` | Short server name |
 | `admin`  | `String` | Admin pseudonym/name |
-| `discr`  | `String` | Server description |
+| `descr`  | `String` | Server description |
 | `nsfw`   | `Boolean` | Is not server safe for work? |
 | `timeout` | `Number` | After how many minutes are posts deleted? |
 | `language` | `String` | Language used on server |

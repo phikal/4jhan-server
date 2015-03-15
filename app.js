@@ -22,7 +22,7 @@ var info = {
     name : config.name || "Nameless 4jhan server",
     short : config.short || "z",
     admin : config.admin,
-    discription : config.discr || "A 4jhan server",
+    description : config.descr || "A 4jhan server",
     nsfw : config.nsfw || false,
     timeout : config.timeout || (config.timeout = 60),
     language : config.lang || "English",
