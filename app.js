@@ -103,9 +103,9 @@ app.get('/img/:img', function(req,res) {
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
     if (!req.body.text && (!config.image || req.files.file))
-        return res.send(400);
+        return req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
-        return res.send(415);
+        return req.body.url ? res.redirect(req.body.url) : res.send(415);
 
     var parts = nameparse(req.body.name);
     db.newPost({
@@ -117,7 +117,7 @@ app.post('/upload', function(req,res) {
         tripcode : parts[1]
     }, function (err) {
         if (err) return res.send(500);
-        if (req.body.next) return res.redirect(req.body.next);
+        if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
 });
@@ -125,9 +125,9 @@ app.post('/upload', function(req,res) {
 // Comment on Post, image optional
 app.post('/comment', function(req,res) {
     if (!req.body.text)
-        return res.send(400);
+        return req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
-        return res.send(415);
+        return req.body.url ? res.redirect(req.body.url) : res.send(415);
 
     var parts = nameparse(req.body.name);
 	db.newComment({
@@ -139,7 +139,7 @@ app.post('/comment', function(req,res) {
         tripcode : parts[1]
     }, function (err) {
         if (err) return res.send(500);
-        if (req.body.next) return res.redirect(req.body.next);
+        if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
 });
