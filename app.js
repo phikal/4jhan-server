@@ -92,9 +92,9 @@ app.get('/img/:img', function(req,res) {
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
     if (!req.body.text && (!config.image || req.files.file))
-        req.body.url ? res.redirect(req.body.url) : res.send(400);
+        return req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
-        req.body.url ? res.redirect(req.body.url) : res.send(415);
+        return req.body.url ? res.redirect(req.body.url) : res.send(415);
 
     db.newPost({
         title : req.body.title,
@@ -105,7 +105,7 @@ app.post('/upload', function(req,res) {
         upload : new Date()
     }, function (err) {
         if (err) return res.send(500);
-        if (req.body.next) return res.redirect(req.body.next);
+        if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
 });
@@ -113,9 +113,9 @@ app.post('/upload', function(req,res) {
 // Comment on Post, image optional
 app.post('/comment', function(req,res) {
     if (!req.body.text)
-        req.body.url ? res.redirect(req.body.url) : res.send(400);
+        return req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
-        req.body.url ? res.redirect(req.body.url) : res.send(415);
+        return req.body.url ? res.redirect(req.body.url) : res.send(415);
 
 	db.newComment({
         name : req.body.name,
@@ -126,7 +126,7 @@ app.post('/comment', function(req,res) {
         upload : new Date(),
     }, function (err) {
         if (err) return res.send(500);
-        if (req.body.next) return res.redirect(req.body.next);
+        if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
 });
