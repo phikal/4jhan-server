@@ -44,7 +44,7 @@ var app = express();
 if (config.log) app.use((require('morgan'))(config.log));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(multer({ dest: config.upload || './img/' }));
+app.use(multer({ dest: config.upload || './img/'}));
 
 // Markdown setup
 if (config.markdown)
@@ -117,9 +117,9 @@ app.get('/thumb/:thumb', function(req,res) {
 app.post('/upload', function(req,res) {
     filename = req.files.file.name;
     if (!req.body.text && (!config.image || req.files.file))
-        return res.send(400);
+        return req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(filename.split('.').pop()) == -1)
-        return res.send(415);
+        return req.body.url ? res.redirect(req.body.url) : res.send(415);
     if (config.thumb)
 	imager(filename);
 
@@ -133,7 +133,7 @@ app.post('/upload', function(req,res) {
         tripcode : parts[1]
     }, function (err) {
         if (err) return res.send(500);
-        if (req.body.next) return res.redirect(req.body.next);
+        if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
 });
@@ -142,14 +142,14 @@ app.post('/upload', function(req,res) {
 app.post('/comment', function(req,res) {
     filename = req.files.file.name;
     if (!req.body.text)
-        return res.send(400);
+        return req.body.url ? res.redirect(req.body.url) : res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
-        return res.send(415);
+        return req.body.url ? res.redirect(req.body.url) : res.send(415);
     if (config.thumb)
 	imager(filename);
 
     var parts = nameparse(req.body.name);
-    db.newComment({
+	db.newComment({
         name : parts[0],
         text : config.markdown ? marked(req.body.text) : req.body.text,
         op :   req.body.op,
@@ -158,7 +158,7 @@ app.post('/comment', function(req,res) {
         tripcode : parts[1]
     }, function (err) {
         if (err) return res.send(500);
-        if (req.body.next) return res.redirect(req.body.next);
+        if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
 });
