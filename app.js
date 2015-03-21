@@ -12,7 +12,8 @@ var express = require('express'),
     multer = require('multer'),
     auth = require('basic-auth'),
     marked = require('marked-no-images'),
-    crypto = require('crypto');
+    crypto = require('crypto'),
+    imager = require("./lib/imager");
 
 // Get config
 var config = require('./config.json') || {};
@@ -32,8 +33,7 @@ var info = {
     imageForce : config.image || (config.image = true),
     uptime : new Date().toUTCString(),
     extra : config.extra,
-    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ]),
-    tripcode : config.tripcode
+    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ])
 };
 
 // DB setup
@@ -44,7 +44,7 @@ var app = express();
 if (config.log) app.use((require('morgan'))(config.log));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
-app.use(multer({ dest: config.upload || './img/'}));
+app.use(multer({ dest: config.upload || './img/' }));
 
 // Markdown setup
 if (config.markdown)
@@ -100,19 +100,29 @@ app.get('/img/:img', function(req,res) {
     res.sendfile((config.upload || './img/')+req.params.img);
 });
 
+app.get('/thumb/:thumb', function(req,res) {
+    if (config.thumbs)
+	res.sendfile('./thumb/'+req.params.thumb);
+    else
+	res.sendfile((config.upload || './img/')+req.params.thumb);
+});
+
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
+    filename = req.files.file.name;
     if (!req.body.text && (!config.image || req.files.file))
         return res.send(400);
-    if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
+    if (req.files.file && config.files.indexOf(filename.split('.').pop()) == -1)
         return res.send(415);
+    if (config.thumb)
+	imager(filename);
 
     var parts = nameparse(req.body.name);
     db.newPost({
         title : req.body.title,
         name : parts[0],
         text : config.markdown ? marked(req.body.text) : req.body.text,
-        img : req.files.file ? req.files.file.name : undefined,
+        img : req.files.file ? filename : undefined,
         upload : new Date(),
         tripcode : parts[1]
     }, function (err) {
@@ -124,17 +134,20 @@ app.post('/upload', function(req,res) {
 
 // Comment on Post, image optional
 app.post('/comment', function(req,res) {
+    filename = req.files.file.name;
     if (!req.body.text)
         return res.send(400);
     if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
         return res.send(415);
+    if (config.thumb)
+	imager(filename);
 
     var parts = nameparse(req.body.name);
-	db.newComment({
+    db.newComment({
         name : parts[0],
         text : config.markdown ? marked(req.body.text) : req.body.text,
         op :   req.body.op,
-        img :  req.files.file ? req.files.file.name : undefined,
+        img :  req.files.file ? filename : undefined,
         upload : new Date(),
         tripcode : parts[1]
     }, function (err) {
