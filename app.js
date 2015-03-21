@@ -86,15 +86,21 @@ app.get('/thread/:id', function(req,res) {
     });
 });
 
-app.get('/img/:img', function(req,res) {
-    res.sendfile((config.upload || './img/')+req.params.img);
+// Send image
+var simg = function(res, img) {
+    res.sendfile((config.upload || './img/')+img);
+};
+
+app.get('/img/:img', function(req, res) {
+    simg(res, req.params.img);
 });
 
 app.get('/thumb/:thumb', function(req,res) {
-    if (config.thumbs)
-	res.sendfile('./thumb/'+req.params.thumb);
-    else
-	res.sendfile((config.upload || './img/')+req.params.thumb);
+    if (config.thumb) fs.exists('./img/'+req.params.thumb, function(exists) {
+	if (exists) res.sendfile('./thumb/'+req.params.thumb);
+	else simg(res, req.params.thumb);
+    });
+    else simg(res, req.params.thumb);
 });
 
 // Upload post (and image if config.image)
