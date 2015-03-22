@@ -30,10 +30,11 @@ var info = {
     version : require('./package.json').version,
     database : config.db || (config.db = "sqlite"),
     page : config.page,
-    imageForce : config.image || (config.image = true),
+    imageForce : (config.image === false ? false : (config.image = true)),
     uptime : new Date().toUTCString(),
     extra : config.extra,
-    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ])
+    files : config.files || (config.files = [ 'png', 'jpg', 'gif' ]),
+    tripcode : (config.tripcode === false ? false : (config.tripcode = true))
 };
 
 // DB setup

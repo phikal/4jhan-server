@@ -18,10 +18,11 @@ The server information formated as as JSON object:
 | `version` | `String` | Server version |  |
 | `database` | `String` | Database used for server | `sqlite` |
 | `page` | `Number` | Are pages used and items per page | |
-| `imageForce` | `Boolean` | Do posts require images | `true` |
+| `imageForce` | `Boolean` | Do posts require images. Can turn board into text board. | `true` |
 | `uptime` | `String` | Date on which server was started, [ISO 8601 format](https://en.wikipedia.org/wiki/ISO_8601) | |
 | `extra` | `String` | Extra description (rules, attribution, nonsense) | |
 | `files` | `Array`  | Allowed file types | ` [ 'png', 'jpg', 'gif' ] ` |
+| `tripcode` | `Boolean` | Are tripcodes enabled?| `true` |
 
 Some values may not be hosted, f.e.: `page`. If that is so, they are ignored (no pages)
 
@@ -63,6 +64,10 @@ The server may or may not send extra values, depending on the database used. The
 
 Returns image file `$img`.
 
+##### `GET:/thumb/$thumb`
+
+If thumbnails are enabled, this path will return a compressed version of `GET:/img/$thumb`, but if not, it will return the same as `GET:/img/$img`.
+
 ##### `POST:/upload`
 
 A `multipart/form-data` form used for uploading posts.
@@ -72,7 +77,7 @@ A `multipart/form-data` form used for uploading posts.
 | `text`   | `String` | Containing post text. |
 | `file`   | `File`   | *file-to-upload*, <1MB. |
 | `title`  | `String` | Post title |
-| `name`   | `String` | OP's pseudonym, format: `name#tripcode` |
+| `name`   | `String` | OP's pseudonym, format: `name#password` |
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
 
 ##### `POST:/comment`
@@ -81,6 +86,6 @@ A `multipart/form-data` form used for uploading posts.
 |----------|----------|-----------------|
 | `text`   | `String` | Containing post text. |
 | `file`   | `File`   | *file-to-upload*, <1MB. Optional |
-| `name`   | `String` | Commenter's pseudonym, format: `name#tripcode`|
+| `name`   | `String` | Commenter's pseudonym, format: `name#password`|
 | `url`    | `String` | An URL, to which the user will be redirected after upload. Optional |
 | `op`     | `String` | ID of the post to add comment to. |
