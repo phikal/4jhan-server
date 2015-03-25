@@ -28,7 +28,6 @@ var info = {
     timeout : config.timeout || (config.timeout = 60),
     language : config.lang || "English",
     version : require('./package.json').version,
-    database : config.db || (config.db = "sqlite"),
     page : config.page,
     imageForce : (config.image === false ? false : (config.image = true)),
     uptime : new Date().toUTCString(),
@@ -38,7 +37,18 @@ var info = {
 };
 
 // DB setup
-var db = require("./lib/db")(config.db);
+var db = {};
+require("./lib/db")(config.db, function(err, res) {
+    if (!res || err) {
+	console.error('DB error:');
+	console.error(err);
+	process.exit(1);
+    }
+    db = res;
+    //setInterval(db.clear, config.timeout);
+    db.clear();
+    console.log("Database set up.");
+});
 
 // Express setup
 var app = express();
@@ -54,10 +64,10 @@ if (config.markdown)
 // Name parsing & tripcode gen
 var regname = /^([^#]*)(#.*)?$/;
 var nameparse = function(name) {
-	if (!config.tripcode) return name.substr(0, namew.indexOf('#'));
+    if (!name) return;
+    if (!config.tripcode) return name.substr(0, namew.indexOf('#'));
     var parts = name.match(regname);
-    if (!parts[2]) return [parts[1], null];
-	return [parts[1], crypto.pbkdf2Sync(parts[1],parts[2], 3, 10).toString('base64').substring(0,9)];
+    return [parts[1], parts[2] ? crypto.pbkdf2Sync(parts[1],parts[2], 3, 10).toString('base64').substring(0,9) : null];
 };
 
 // Enable CORS
@@ -76,9 +86,9 @@ app.get('/', function(req,res) {
 // Get list of posts (limited to config.page if set)
 app.get('/list', function(req,res) {
     db.getList(req.query.page, function (err, resp) {
-        if (err) res.send(500);
-		for (var i in resp.thread)
-			resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
+        if (err) return res.send(err);
+	for (var i in resp.thread)
+	    resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
         res.send(resp);
     });
 });
@@ -86,28 +96,30 @@ app.get('/list', function(req,res) {
 // Get comments on post i.e. Thread
 app.get('/thread/:id', function(req,res) {
     db.getThread(req.params.id, function (err, resp) {
-        if (err) return res.send(500);
-		if (!resp) return res.send(404);
-
-		resp.upload = new Date(resp.upload).toUTCString();
-		for (var i in resp.thread)
-			resp.thread[i].upload = new Date(resp.upload[i].upload).toUTCString();
-
+        if (err) return res.send(err);
+	resp.upload = new Date(resp.upload).toUTCString();
+	for (var i in resp.thread)
+	    resp.thread[i].upload = new Date(resp.thread[i].upload).toUTCString();
         res.send(resp);
     });
 });
 
 // Send image
 var simg = function(res, img) {
-    res.sendfile((config.upload || './img/')+img);
+    fs.exists('./img/'+img, function(exists) {
+	if (exists) return res.sendfile((config.upload || './img/')+img);
+	res.send(404);
+    });
 };
 
+// Image
 app.get('/img/:img', function(req, res) {
     simg(res, req.params.img);
 });
 
+// Thumbnail or raw image
 app.get('/thumb/:thumb', function(req,res) {
-    if (config.thumb) fs.exists('./img/'+req.params.thumb, function(exists) {
+    if (config.thumb) fs.exists('./thumb/'+req.params.thumb, function(exists) {
 	if (exists) res.sendfile('./thumb/'+req.params.thumb);
 	else simg(res, req.params.thumb);
     });
@@ -116,24 +128,23 @@ app.get('/thumb/:thumb', function(req,res) {
 
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
-    filename = req.files.file.name;
     if (!req.body.text && (!config.image || req.files.file))
         return req.body.url ? res.redirect(req.body.url) : res.send(400);
-    if (req.files.file && config.files.indexOf(filename.split('.').pop()) == -1)
+    if (req.files.file && config.files.indexOf(req.files.file.name.split('.').pop()) == -1)
         return req.body.url ? res.redirect(req.body.url) : res.send(415);
     if (config.thumb)
-	imager(filename);
+	imager(req.files.file.name);
 
     var parts = nameparse(req.body.name);
     db.newPost({
         title : req.body.title,
-        name : parts[0],
+        name : parts ? parts[0] : undefined,
         text : config.markdown ? marked(req.body.text) : req.body.text,
-        img : req.files.file ? filename : undefined,
+        img : req.files.file ? req.files.file.name : undefined,
         upload : new Date(),
-        tripcode : parts[1]
+        tripcode : parts ? parts[1] : undefined
     }, function (err) {
-        if (err) return res.send(500);
+        if (err) return res.send(err);
         if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
@@ -141,24 +152,23 @@ app.post('/upload', function(req,res) {
 
 // Comment on Post, image optional
 app.post('/comment', function(req,res) {
-    filename = req.files.file.name;
     if (!req.body.text)
         return req.body.url ? res.redirect(req.body.url) : res.send(400);
-    if (req.files.file && config.files.indexOf(req.files.file.originalname.split('.').pop()) == -1)
+    if (req.files.file && config.files.indexOf(req.files.file.name.split('.').pop()) == -1)
         return req.body.url ? res.redirect(req.body.url) : res.send(415);
     if (config.thumb)
-	imager(filename);
+	imager(req.files.file.name);
 
     var parts = nameparse(req.body.name);
-	db.newComment({
-        name : parts[0],
+    db.newComment({
+        name : parts ? parts[0] : undefined,
         text : config.markdown ? marked(req.body.text) : req.body.text,
         op :   req.body.op,
-        img :  req.files.file ? filename : undefined,
+        img :  req.files.file ? req.files.file.name : undefined,
         upload : new Date(),
-        tripcode : parts[1]
+        tripcode : parts ? parts[1] : undefined
     }, function (err) {
-        if (err) return res.send(500);
+        if (err) return res.send(err);
         if (req.body.url) return res.redirect(req.body.url);
         res.send();
     });
@@ -168,8 +178,5 @@ app.post('/comment', function(req,res) {
 if (fs.existsSync('./robots.txt')) app.get('/robots.txt', function(req,res) {
 	 res.sendfile('./robots.txt');
 });
-
-// Delete too old posts. (set by config.timeout)
-setInterval(db.clear, 6000*config.timeout);
 
 module.exports = app;
