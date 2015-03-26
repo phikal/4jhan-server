@@ -2,38 +2,29 @@
 
 <img src="./4jhan.png" align="left" height="150" width="150"/>
 
-4jhan, inspired by [4chan](http://www.4chan.org/),
-is a minimal server-client network, where a board ( f.e.: `/b/`, `/g/`, `/pol/`,etc.)
-are hosted on individual servers.
-These servers only host [JSON](http://www.json.org/) data and have to be interpreted via clients (native or web). See [paths](/doc/PATHS.md) for specifics. By default the server will host on port 3000. If you want a different port, specify it in the `PORT` env variable. v
+**4jhan**, inspired by [4chan](http://www.4chan.org/),
+is a minimal server-client network, where a board ( f.e.: `/b/`, `/g/`, `/pol/`,etc.) are hosted on individual servers.
+These servers only host [JSON](http://www.json.org/) data and have to be interpreted via clients (native or web).
+See [paths](/doc/PATHS.md) for specifics. By default the server will host on port 3000. If you want a different port, specify it in the `PORT` env variable.
 
 **Feel free to [contribute](/CONTRIBUTING.md)! Possible tasks can be found in the TODO wiki page**
 
-Databases can be set withing the config.
-[MySQL](http://www.mysql.com/), [MongoDB](http://www.mongodb.org/) and [SQLite](http://www.sqlite.org/) (default) are currently supported.
-
 The server is written in [node.js](http://nodejs.org/) and was tested on Linux (Fedora, Arch, Raspbian).
-It is lightweight enough to be run on a [Raspberry Pi](http://www.raspberrypi.org/) ( `sqlite` recommended ).
+It is lightweight enough to be run on a [Raspberry Pi](http://www.raspberrypi.org/).
 This is open ([MIT](/LICENSE), see `LICENSE`) and work-in-progress software, **expect errors** and keep updated.
 
----
+### Setting up
 
-Packages have to be installed before using from the project directory via [nmp](https://www.npmjs.com/):
+After cloning the project, packages have to be installed before using from the project directory via [nmp](https://www.npmjs.com/):
 
 ```Shell
 $ npm install
 ```
 
-SQLite is installed by default. If you want to use other databases, install them via these commands:
-
-```Shell
-$ npm install mongoose # for mongo db
-$ npm install mysql3
-```
-
-Make sure to set the database in your config file too. (default sqlite)
-
----
+By default 4jhan will use a [SQLite](https://sqlite.org/) database, and shoud work well enough for most situations.
+Data processing is done via [node-orm2](https://github.com/dresende/node-orm2/),
+and therfore can also connect to [MySQL](http://www.mysql.com/) and [PostgreSQL](http://www.postgresql.org/).
+How to specifically set up the connection, can be found within their [wiki page](https://github.com/dresende/node-orm2/wiki/Connecting-to-Database)
 
 ### To start server , type:
 
@@ -53,4 +44,4 @@ It will now be running in the background.
 
 **Note:** Don't copy directly. Duh.
 
-**For more information (changes, paths, etc.), take a look at [doc/](/doc)**
+**For more information (config, paths, etc.), take a look at [doc/](/doc)**

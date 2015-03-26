@@ -45,8 +45,7 @@ require("./lib/db")(config.db, function(err, res) {
 	process.exit(1);
     }
     db = res;
-    //setInterval(db.clear, config.timeout);
-    db.clear();
+    setInterval(db.clear, config.timeout*6000);
     console.log("Database set up.");
 });
 

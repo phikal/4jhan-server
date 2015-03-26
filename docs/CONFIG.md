@@ -4,7 +4,7 @@ The configuration file is `config.json`. It has to be places in the root project
 
 | **name** | **type** | **description** |
 |----------|----------|-----------------|
-| `db`     | `String` | Database to use, see options above |
+| `db`     | `String` | Database to use, see [README.md](/README.md). |
 | `user`   | `String` | MySQL user, if MySQL is used |
 | `pass`   | `String` | MySQL password, if MySQL is used |
 | `host`   | `String` | MySQL or MongoDB database URL |
