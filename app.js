@@ -103,27 +103,29 @@ app.get('/thread/:id', function(req,res) {
     });
 });
 
-// Send image
-var simg = function(res, img) {
-    fs.exists('./img/'+img, function(exists) {
-	if (exists) return res.sendfile((config.upload || './img/')+img);
-	res.send(404);
-    });
-};
+if (config.static) {
+  // Send image
+  var simg = function(res, img) {
+      fs.exists('./img/'+img, function(exists) {
+  	if (exists) return res.sendfile((config.upload || './img/')+img);
+  	res.send(404);
+      });
+  };
 
-// Image
-app.get('/img/:img', function(req, res) {
-    simg(res, req.params.img);
-});
+  // Image
+  app.get('/img/:img', function(req, res) {
+      simg(res, req.params.img);
+  });
 
-// Thumbnail or raw image
-app.get('/thumb/:thumb', function(req,res) {
-    if (config.thumb) fs.exists('./thumb/'+req.params.thumb, function(exists) {
-	if (exists) res.sendfile('./thumb/'+req.params.thumb);
-	else simg(res, req.params.thumb);
-    });
-    else simg(res, req.params.thumb);
-});
+  // Thumbnail or raw image
+  app.get('/thumb/:thumb', function(req,res) {
+      if (config.thumb) fs.exists('./thumb/'+req.params.thumb, function(exists) {
+  	if (exists) res.sendfile('./thumb/'+req.params.thumb);
+  	else simg(res, req.params.thumb);
+      });
+      else simg(res, req.params.thumb);
+  });
+}
 
 // Upload post (and image if config.image)
 app.post('/upload', function(req,res) {
