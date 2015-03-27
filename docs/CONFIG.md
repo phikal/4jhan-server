@@ -24,6 +24,7 @@ The configuration file is `config.json`. It has to be places in the root project
 | `upload` | `String` | Local directory for image uplaod, `./img/` as default |
 | `markdown` | `Boolean` | Enable Markdown input (HTML output). |
 | `thumb` | `Boolean` | Enable thumbnails, `false` by default. |
+| `static` | `Boolean` | Are images served by the server? `true` by default. |
 
 A config file is neccecary, althoug it can only contain `{}`. If that is so, the default options will be used (Not recomended).
 
