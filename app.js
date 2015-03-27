@@ -103,6 +103,7 @@ app.get('/thread/:id', function(req,res) {
     });
 });
 
+if (config.static !== undefined) config.static = true;
 if (config.static) {
   // Send image
   var simg = function(res, img) {
