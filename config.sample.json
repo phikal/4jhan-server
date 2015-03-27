@@ -4,6 +4,7 @@
     "extra" : "this should be changed",
     "markdown": false,
     "short" : "t",
+    "static": true,
     "thumbs": true,
     "name"  : "4jhan testing server"
 }
