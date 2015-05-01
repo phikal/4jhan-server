@@ -3,10 +3,25 @@
 // NODE.JS 4JHAN SERVER
 // LICENCE: MIT
 
-var app = require('../app');
+// Initialisation script
 
-app.set('port', process.env.PORT || 3000);
+var http = require('http'),
+    https = require('https'),
+    fs = require('fs');
 
-var server = app.listen(app.get('port'), function() {
-  console.log('4jhan server listening on port ' + server.address().port);
+var app = require('../app'),
+    config = require('../config.json');
+
+var server;
+
+if (config.https)
+    server = https.createServer({
+        key: fs.readFileSync(config.https[key], 'utf8'),
+        cert: fs.readFileSync(config.https[cert], 'utf8')
+    }, app);
+else
+    server = http.createServer(app);
+
+server.listen(process.env.PORT || 3000, function() {
+    console.log('4jhan server listening on port ' + server.address().port);
 });
