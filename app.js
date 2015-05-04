@@ -103,17 +103,16 @@ app.get('/thread/:id', function(req, res) {
     });
 });
 
-// If config.static is not defined, let it be true (default)
-if (config.static === undefined) config.static = true;
-if (config.static) {
-    // Send image
-    var simg = function(res, img) {
-        fs.exists('./img/' + img, function(exists) {
-            if (exists) return res.sendfile((config.upload || './img/') + img);
-            res.send(404);
-        });
-    };
+// Send image
+var simg = function(res, img) {
+    fs.exists('./img/' + img, function(exists) {
+        if (exists) return res.sendfile((config.upload || './img/') + img);
+        res.send(404);
+    });
+};
 
+// If config.static is not defined, let it be true (default)
+if (config.static === undefined) {
     // Image
     app.get('/img/:img', function(req, res) {
         simg(res, req.params.img);
