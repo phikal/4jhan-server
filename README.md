@@ -15,7 +15,7 @@ This is open ([MIT](/LICENSE), see `LICENSE`) and work-in-progress software, **e
 
 ### Setting up
 
-After cloning the project, packages have to be installed before using from the project directory via [nmp](https://www.npmjs.com/):
+After cloning the project, packages have to be installed before using from the project directory via [npm](https://www.npmjs.com/):
 
 ```Shell
 $ npm install
