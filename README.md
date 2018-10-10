@@ -7,9 +7,9 @@ is a minimal server-client network, where a board ( f.e.: `/b/`, `/g/`, `/pol/`,
 These servers only host [JSON](http://www.json.org/) data and have to be interpreted via clients (native or web).
 See [paths](/doc/PATHS.md) for specifics. By default the server will host on port 3000. If you want a different port, specify it in the `PORT` env variable.
 
-**Feel free to [contribute](/CONTRIBUTING.md)! Possible tasks can be found in the TODO wiki page**
+**Feel free to [contribute](/CONTRIBUTING.md)! Possible tasks can be found in the [TODO wiki page](https://github.com/phikal/4jhan-server/wiki/TODO)**
 
-The server is written in [node.js](http://nodejs.org/) and was tested on Linux (Fedora, Arch, Raspbian).
+The server is written in [node.js](http://nodejs.org/) and was tested on Linux (Fedora, Arch, Debian).
 It is lightweight enough to be run on a [Raspberry Pi](http://www.raspberrypi.org/).
 This is open ([MIT](/LICENSE), see `LICENSE`) and work-in-progress software, **expect errors** and keep updated.
 
@@ -44,4 +44,4 @@ It will now be running in the background.
 
 **Note:** Don't copy directly. Duh.
 
-**For more information (config, paths, etc.), take a look at [doc/](/doc)**
+**For more information (config, paths, help, h etc.), take a look at [wiki](https://github.com/phikal/4jhan-server/wiki)**

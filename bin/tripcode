@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+// NODE.JS 4JHAN SERVER
+// LICENCE: MIT
+
+// Tripcode script 
+
+if (process.argv.length < 4) {
+    console.error("usage: tripcode [username] [password]");
+    process.exit(1);
+}
+
+console.log(require('../lib/tripcode.js')(process.argv[2] + '#' + process.argv[3])[1]);
